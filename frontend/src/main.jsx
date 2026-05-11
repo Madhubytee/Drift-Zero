@@ -272,7 +272,7 @@ function App() {
     }
     // Store the entered NORAD ID so DashboardOverlay can run the pipeline for it
     const parsed = parseInt(noradId, 10)
-    if (!isNaN(parsed) && parsed > 0) setTrackedNoradId(parsed)
+    if (!isNaN(parsed) && parsed > 0) setActiveNoradId(parsed)
     setActivated(true)
     setTimeout(() => setLandingMounted(false), 1000)
   }
@@ -346,7 +346,6 @@ function App() {
       {/* Dashboard — slides in after activation */}
       <StrictMode>
         <DashboardOverlay activated={activated} noradId={activeNoradId} demo={demoMode} showAll={showAllSats} onRetarget={handleRetarget} />
-        <DashboardOverlay activated={activated} noradId={trackedNoradId} />
       </StrictMode>
 
       {/* Mask GlobeView's own UI chrome during landing */}

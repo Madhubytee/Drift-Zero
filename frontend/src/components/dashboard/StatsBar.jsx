@@ -94,16 +94,12 @@ export default function StatsBar({ stats: propStats, isLive = false, onRetarget,
   const [searchVal, setSearchVal] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const prob = fleetStats.maxCollisionProb ?? fleetStats.avgCollisionProb ?? 0
-export default function StatsBar({ stats = {}, isLive = false }) {
   const {
     activeSatellites   = 0,
     activeConjunctions = 0,
     criticalAlerts     = 0,
-    maxCollisionProb   = 0,
-    avgCollisionProb   = 0,
-  } = stats
+  } = fleetStats
 
-  const prob = maxCollisionProb || avgCollisionProb
   const probDisplay = prob < 1e-12 ? '< 1e-10%' : (prob * 100).toExponential(2) + '%'
 
   return (

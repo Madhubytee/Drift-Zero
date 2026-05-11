@@ -7,7 +7,7 @@ import CascadeAnalysis from './components/dashboard/CascadeAnalysis'
 import SatelliteModal from './components/SatelliteModal'
 import RoguePanel from './components/RoguePanel'
 import { satStore } from './satStore'
-import { fetchConjunctions, deriveStats } from './api/shield'
+import { fetchConjunctions, fetchSatellite, deriveStats } from './api/shield'
 import { fleetStats as mockFleetStats, conjunctions as mockConjunctions, rogueActorPositions } from './data/mockData.js'
 import { SAT_ORBIT_PARAMS } from './data/satelliteOrbits'
 
@@ -36,9 +36,6 @@ function buildRogueOrbit(Cesium, { alt, inclination, lat = 0, lon = 0 }) {
     return Cesium.Cartesian3.fromRadians(lonAN + dLon, lat, altM)
   })
 }
-import { fetchConjunctions, fetchSatellite, deriveStats } from './api/shield'
-import { conjunctions as mockConjunctions } from './data/mockData.js'
-
 const PANEL_MIN = 15   // % of screen width
 const PANEL_MAX = 55
 const DEFAULT_PANEL = 30
@@ -58,7 +55,6 @@ const NORAD_TO_SAT_ID = {
 }
 
 export default function DashboardOverlay({ activated = false, noradId = 25544, demo = false, showAll = false, onRetarget }) {
-export default function DashboardOverlay({ activated = false, noradId = null }) {
   const [activeMode, setActiveMode] = useState('shield')   // 'shield' | 'rogue'
   const [selectedConjunction, setSelectedConjunction] = useState(null)
   const [selectedManeuver, setSelectedManeuver] = useState(null)  // slug for cascade
@@ -180,7 +176,6 @@ export default function DashboardOverlay({ activated = false, noradId = null }) 
       clearInterval(interval)
     }
   }, [noradId, demo])
-  }, [selectedNoradId])
 
   // Slide panels in after activation
   useEffect(() => {
@@ -670,4 +665,4 @@ export default function DashboardOverlay({ activated = false, noradId = null }) 
       )}
     </>
   )
-}
+}11
