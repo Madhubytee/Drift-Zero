@@ -6,13 +6,19 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn backend.api:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: SPACETRACK_EMAIL
+      - key: PYTHONPATH
+        value: backend
+      - key: SPACETRACK_USERNAME
         sync: false
       - key: SPACETRACK_PASSWORD
+        sync: false
+      - key: ESA_DISCOS_TOKEN
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: DATABRICKS_HOST
         sync: false
       - key: DATABRICKS_TOKEN
+        sync: false
+      - key: DATABRICKS_WAREHOUSE_ID
         sync: false
