@@ -90,7 +90,19 @@ def fetch_maneuver_events(w: WorkspaceClient, warehouse_id: str) -> pd.DataFrame
         raise RuntimeError(f"Fetch failed [{state}]: {result.status.error}")
 
     columns = [c.name for c in result.manifest.schema.columns]
-    rows    = result.result.data_array if result.result.data_array else []
+    rows = []
+    if result.result and result.result.data_array:
+        rows.extend(result.result.data_array)
+
+    total_chunks = result.manifest.total_chunk_count or 1
+    for chunk_idx in range(1, total_chunks):
+        chunk = w.statement_execution.get_statement_result_chunk_n(
+            statement_id=result.statement_id,
+            chunk_index=chunk_idx,
+        )
+        if chunk.data_array:
+            rows.extend(chunk.data_array)
+
     df = pd.DataFrame(rows, columns=columns)
     df["estimated_delta_v"] = pd.to_numeric(df["estimated_delta_v"], errors="coerce").fillna(0.0)
 

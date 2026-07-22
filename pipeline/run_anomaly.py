@@ -14,6 +14,7 @@ import io
 import json
 import os
 import sys
+import time
 import logging
 from collections import defaultdict
 from datetime import timedelta, timezone
@@ -65,9 +66,15 @@ def run_sql(w: WorkspaceClient, statement: str, warehouse_id: str) -> None:
     result = w.statement_execution.execute_statement(
         statement=statement,
         warehouse_id=warehouse_id,
-        wait_timeout="50s",
+        wait_timeout="0s",
     )
-    state = result.status.state.value if result.status else "UNKNOWN"
+    statement_id = result.statement_id
+    while True:
+        result = w.statement_execution.get_statement(statement_id)
+        state = result.status.state.value if result.status else "UNKNOWN"
+        if state in ("SUCCEEDED", "FAILED", "CANCELED", "CLOSED"):
+            break
+        time.sleep(5)
     if state != "SUCCEEDED":
         error = result.status.error if result.status else None
         raise RuntimeError(f"SQL failed [{state}]: {error}")
@@ -81,9 +88,15 @@ def fetch_dataframe(w: WorkspaceClient, warehouse_id: str, sql: str) -> pd.DataF
     response = w.statement_execution.execute_statement(
         statement=sql,
         warehouse_id=warehouse_id,
-        wait_timeout="50s",
+        wait_timeout="0s",
     )
-    state = response.status.state.value if response.status else "UNKNOWN"
+    statement_id = response.statement_id
+    while True:
+        response = w.statement_execution.get_statement(statement_id)
+        state = response.status.state.value if response.status else "UNKNOWN"
+        if state in ("SUCCEEDED", "FAILED", "CANCELED", "CLOSED"):
+            break
+        time.sleep(5)
     if state != "SUCCEEDED":
         error = response.status.error if response.status else None
         raise RuntimeError(f"Query failed [{state}]: {error}")

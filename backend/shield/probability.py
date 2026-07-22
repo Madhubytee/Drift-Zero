@@ -27,8 +27,8 @@ evaluated analytically; only a 1D numerical integral over y remains.
 
 Defaults (combined 1-sigma for both objects combined)
 ------------------------------------------------------
-  σ_r   = 1.0 km  (radial)
-  σ_c   = 5.0 km  (cross-track / along-track)
+  σ_r   = 0.1 km  (radial)
+  σ_c   = 0.5 km  (cross-track / along-track)
   r_HBR = 0.01 km (10 m hard-body radius)
 
 Input
@@ -56,8 +56,8 @@ from scipy import integrate
 from scipy.special import erf
 
 # ── Default uncertainty model ─────────────────────────────────────────────────
-SIGMA_RADIAL_KM:     float = 1.0     # combined 1-sigma, radial direction
-SIGMA_CROSSTRACK_KM: float = 5.0     # combined 1-sigma, cross-track/along-track
+SIGMA_RADIAL_KM:     float = 0.1     # combined 1-sigma, radial direction
+SIGMA_CROSSTRACK_KM: float = 0.5     # combined 1-sigma, cross-track/along-track
 HARD_BODY_RADIUS_KM: float = 0.01    # 10 m combined hard-body radius
 
 # ── Confidence thresholds (data age in minutes) ───────────────────────────────

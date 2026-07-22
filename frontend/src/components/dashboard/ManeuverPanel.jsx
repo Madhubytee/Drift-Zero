@@ -653,7 +653,19 @@ export default function ManeuverPanel({ conjunction, demo = false, onSelectManeu
           const newMiss = options.current_miss_km + opt.miss_increase_km
 
           return (
-            <div key={c.id} onClick={() => handleSelect(opt, c.id)} style={{
+            <div
+              key={c.id}
+              onClick={() => handleSelect(opt, c.id)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSel}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelect(opt, c.id)
+                }
+              }}
+              style={{
               borderRadius: 5,
               background: isSel ? c.bg : 'rgba(255,255,255,0.02)',
               border: `1px solid ${isSel ? c.border : 'rgba(255,255,255,0.06)'}`,

@@ -10,6 +10,7 @@ export default function LandingOverlay({ onActivate }) {
   const [exampleIdx, setExampleIdx] = useState(0)
   const inputRef = useRef(null)
   const typingRef = useRef(null)
+  const advanceRef = useRef(null)
 
   // Typing animation for placeholder
   useEffect(() => {
@@ -29,11 +30,14 @@ export default function LandingOverlay({ onActivate }) {
         setPlaceholder(target.slice(0, i))
         if (i === 0) {
           clearInterval(typingRef.current)
-          setTimeout(() => setExampleIdx(prev => (prev + 1) % EXAMPLE_IDS.length), 200)
+          advanceRef.current = setTimeout(() => setExampleIdx(prev => (prev + 1) % EXAMPLE_IDS.length), 200)
         }
       }
     }, 90)
-    return () => clearInterval(typingRef.current)
+    return () => {
+      clearInterval(typingRef.current)
+      clearTimeout(advanceRef.current)
+    }
   }, [exampleIdx])
 
   const handleSubmit = (e) => {

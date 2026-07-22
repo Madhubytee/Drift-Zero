@@ -1,241 +1,38 @@
-{
-  "_meta": {
-    "generated_at": "2026-04-11T17:16:12.565156+00:00Z",
-    "target_object": "ISS (International Space Station)",
-    "norad_id": 25544,
-    "cospar_id": "1998-067A",
-    "description": "One live record from each Drift Zero data source. Field names, types, and values are exactly what the pipeline will receive. See test_apis.py schema tables for per-field documentation."
-  },
-  "source_1_spacetrack_live_tle": {
-    "_doc": "Latest TLE for the target satellite. Refresh every 4\u20138 hours. JOIN KEY: NORAD_CAT_ID",
-    "_endpoint": "https://www.space-track.org/basicspacedata/query/class/gp/NORAD_CAT_ID/25544/format/json/limit/1",
-    "record": {
-      "CCSDS_OMM_VERS": "3.0",
-      "COMMENT": "GENERATED VIA SPACE-TRACK.ORG API",
-      "CREATION_DATE": "2026-04-11T15:36:26",
-      "ORIGINATOR": "18 SPCS",
-      "OBJECT_NAME": "ISS (ZARYA)",
-      "OBJECT_ID": "1998-067A",
-      "CENTER_NAME": "EARTH",
-      "REF_FRAME": "TEME",
-      "TIME_SYSTEM": "UTC",
-      "MEAN_ELEMENT_THEORY": "SGP4",
-      "EPOCH": "2026-04-11T11:44:40.701408",
-      "MEAN_MOTION": "15.48873216",
-      "ECCENTRICITY": "0.00064320",
-      "INCLINATION": "51.6326",
-      "RA_OF_ASC_NODE": "270.1822",
-      "ARG_OF_PERICENTER": "299.5706",
-      "MEAN_ANOMALY": "60.4641",
-      "EPHEMERIS_TYPE": "0",
-      "CLASSIFICATION_TYPE": "U",
-      "NORAD_CAT_ID": "25544",
-      "ELEMENT_SET_NO": "999",
-      "REV_AT_EPOCH": "56141",
-      "BSTAR": "0.00011816000000",
-      "MEAN_MOTION_DOT": "0.00006038",
-      "MEAN_MOTION_DDOT": "0.0000000000000",
-      "SEMIMAJOR_AXIS": "6798.158",
-      "PERIOD": "92.971",
-      "APOAPSIS": "424.396",
-      "PERIAPSIS": "415.651",
-      "OBJECT_TYPE": "PAYLOAD",
-      "RCS_SIZE": "LARGE",
-      "COUNTRY_CODE": "CIS",
-      "LAUNCH_DATE": "1998-11-20",
-      "SITE": "TTMTR",
-      "DECAY_DATE": null,
-      "FILE": "5126412",
-      "GP_ID": "319129555",
-      "TLE_LINE0": "0 ISS (ZARYA)",
-      "TLE_LINE1": "1 25544U 98067A   26101.48935997  .00006038  00000-0  11816-3 0  9991",
-      "TLE_LINE2": "2 25544  51.6326 270.1822 0006432 299.5706  60.4641 15.48873216561413"
-    }
-  },
-  "source_2_spacetrack_cdm": {
-    "_doc": "Conjunction Data Messages where the target is SAT_1. JOIN KEYS: SAT_1_ID, SAT_2_ID \u2192 NORAD_CAT_ID",
-    "_endpoint": "https://www.space-track.org/basicspacedata/query/class/cdm_public/SAT_1_ID/25544/TCA/>now/format/json/orderby/TCA asc/limit/3",
-    "records": [],
-    "_note": "Empty list means no active conjunctions right now \u2014 this is normal. In production poll frequently and store all events."
-  },
-  "source_3_spacetrack_historical_tle": {
-    "_doc": "Historical TLE time-series \u2014 same schema as source_1. Used by Rogue for pattern-of-life baseline.",
-    "_endpoint": "https://www.space-track.org/basicspacedata/query/class/gp_history/NORAD_CAT_ID/25544/EPOCH/YYYY-MM-DD--YYYY-MM-DD/orderby/EPOCH asc/format/json",
-    "total_records_last_30_days": 120,
-    "sample_records": [
-      {
-        "CCSDS_OMM_VERS": "3.0",
-        "COMMENT": "GENERATED VIA SPACE-TRACK.ORG API",
-        "CREATION_DATE": "2026-03-12T07:46:21",
-        "ORIGINATOR": "18 SPCS",
-        "OBJECT_NAME": "ISS (ZARYA)",
-        "OBJECT_ID": "1998-067A",
-        "CENTER_NAME": "EARTH",
-        "REF_FRAME": "TEME",
-        "TIME_SYSTEM": "UTC",
-        "MEAN_ELEMENT_THEORY": "SGP4",
-        "EPOCH": "2026-03-12T03:49:12.416736",
-        "MEAN_MOTION": "15.48595269",
-        "ECCENTRICITY": "0.00079840",
-        "INCLINATION": "51.6325",
-        "RA_OF_ASC_NODE": "60.1463",
-        "ARG_OF_PERICENTER": "183.4136",
-        "MEAN_ANOMALY": "176.6799",
-        "EPHEMERIS_TYPE": "0",
-        "CLASSIFICATION_TYPE": "U",
-        "NORAD_CAT_ID": "25544",
-        "ELEMENT_SET_NO": "999",
-        "REV_AT_EPOCH": "55671",
-        "BSTAR": "0.00017667000000",
-        "MEAN_MOTION_DOT": "0.00009166",
-        "MEAN_MOTION_DDOT": "0.0000000000000",
-        "SEMIMAJOR_AXIS": "6798.972",
-        "PERIOD": "92.987",
-        "APOAPSIS": "426.265",
-        "PERIAPSIS": "415.408",
-        "OBJECT_TYPE": "PAYLOAD",
-        "RCS_SIZE": "LARGE",
-        "COUNTRY_CODE": "CIS",
-        "LAUNCH_DATE": "1998-11-20",
-        "SITE": "TTMTR",
-... (285 lines left)
-
-example_data.json
-15 KB
 """
 Drift Zero — API Data Source Explorer
 ======================================
 Hits all 5 data sources from the spec, prints a pipeline-oriented schema
 for each one, and saves every live response to example_data.json.
 
-Run:  python -u test_apis.py
-Deps: pip install requests
+Run:  python -u backend/api_test.py
+Deps: pip install -r requirements.txt
 """
 
 import requests
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load credentials from .env file
+load_dotenv()
 
 # ─────────────────────────────────────────────
-# CONFIGURATION
+# CONFIGURATION — loaded from .env
 # ─────────────────────────────────────────────
-SPACETRACK_EMAIL    = "taherakolawala@ufl.edu"
-SPACETRACK_PASSWORD = "MHussain786110!"
-ESA_DISCOS_TOKEN    = "ImVlYTczNTFlLTI3ZmItNGI4ZC1hMjQ0LTFhNDNhMmMyZTQ5YSI.fg6qVNsYnwdEDRgOMojIxjZCwJM"
+SPACETRACK_EMAIL    = os.getenv("SPACETRACK_EMAIL")
+SPACETRACK_PASSWORD = os.getenv("SPACETRACK_PASSWORD")
+ESA_DISCOS_TOKEN    = os.getenv("ESA_DISCOS_TOKEN")
 
-# Test target: ISS — safe, always has data, well-known across all catalogs
-ISS_NORAD_ID  = 25544
-ISS_COSPAR_ID = "1998-067A"
+if not SPACETRACK_EMAIL or not SPACETRACK_PASSWORD:
+    print("\n  ERROR: SPACETRACK_EMAIL and SPACETRACK_PASSWORD not found in .env")
+    print("  Copy .env.example to .env and fill in your credentials.")
+    exit(1)
 
-OUTPUT_FILE = Path(__file__).parent / "example_data.json"
-
-# ─────────────────────────────────────────────
-# PRINT HELPERS
-# ─────────────────────────────────────────────
-
-W = 72  # terminal width
-
-def header(source_num, title, subtitle):
-    """Big section header for each data source."""
-    print("\n" + "━" * W)
-    print(f"  SOURCE {source_num}  │  {title}")
-    print(f"  {'─' * (W - 4)}")
-    print(f"  {subtitle}")
-    print("━" * W)
-
-def subheader(title):
-    print(f"\n  ┌─ {title} {'─' * max(0, W - len(title) - 6)}┐")
-
-def schema_table(rows):
-    """
-    Print a schema table.
-    rows = list of (field, type, pipeline_role, notes)
-    """
-    col_w = [26, 10, 20, 0]   # field, type, role — notes fills the rest
-    col_w[3] = W - sum(col_w[:3]) - 7
-    fmt = "  │ {:<{}} {:<{}} {:<{}} {:<{}}"
-
-    # header row
-    print("  │ " + "─" * (W - 4))
-    print(fmt.format(
-        "FIELD", col_w[0], "TYPE", col_w[1], "PIPELINE ROLE", col_w[2], "NOTES", col_w[3]
-    ))
-    print("  │ " + "─" * (W - 4))
-
-    for field, typ, role, notes in rows:
-        # Word-wrap notes if too long
-        words = notes.split()
-        lines = []
-        line  = ""
-        for w in words:
-            if len(line) + len(w) + 1 <= col_w[3]:
-                line = (line + " " + w).strip()
-            else:
-                lines.append(line)
-                line = w
-        if line:
-            lines.append(line)
-
-        print(fmt.format(field, col_w[0], typ, col_w[1], role, col_w[2], lines[0] if lines else "", col_w[3]))
-        for extra in lines[1:]:
-            print(fmt.format("", col_w[0], "", col_w[1], "", col_w[2], extra, col_w[3]))
-
-    print("  └" + "─" * (W - 2))
-
-
-def live_value(label, value, note=""):
-    """Print a single live value from the actual API response."""
-    note_str = f"  ← {note}" if note else ""
-    print(f"    {label:<30} {str(value):<25}{note_str}")
-
-
-# ══════════════════════════════════════════════════════════════════════
-# SOURCE 1: Space-Track — Live TLE
-# ══════════════════════════════════════════════════════════════════════
-
-def fetch_spacetrack_live_tle(session):
-    url = (
-        "https://www.space-track.org/basicspacedata/query"
-        f"/class/gp/NORAD_CAT_ID/{ISS_NORAD_ID}/format/json/limit/1"
-    )
-    return session.get(url).json()[0]
-
-
-... (447 lines left)
-
-test_apis.py
-28 KB
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  DRIFT ZERO — API Data Source Explorer
-  Target: ISS  │  NORAD 25544  │  COSPAR 1998-067A
-  Output: example_data.json
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-terminal_Output.txt
-45 KB
-﻿
-"""
-Drift Zero — API Data Source Explorer
-======================================
-Hits all 5 data sources from the spec, prints a pipeline-oriented schema
-for each one, and saves every live response to example_data.json.
-
-Run:  python -u test_apis.py
-Deps: pip install requests
-"""
-
-import requests
-import json
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-
-# ─────────────────────────────────────────────
-# CONFIGURATION
-# ─────────────────────────────────────────────
-SPACETRACK_EMAIL    = "taherakolawala@ufl.edu"
-SPACETRACK_PASSWORD = "MHussain786110!"
-ESA_DISCOS_TOKEN    = "ImVlYTczNTFlLTI3ZmItNGI4ZC1hMjQ0LTFhNDNhMmMyZTQ5YSI.fg6qVNsYnwdEDRgOMojIxjZCwJM"
+if not ESA_DISCOS_TOKEN:
+    print("\n  WARNING: ESA_DISCOS_TOKEN not found in .env — DISCOS tests will be skipped.")
+    print("  To use DISCOS, add your token to .env")
 
 # Test target: ISS — safe, always has data, well-known across all catalogs
 ISS_NORAD_ID  = 25544
@@ -448,6 +245,9 @@ def print_source_2(cdm_data):
 # ══════════════════════════════════════════════════════════════════════
 
 def fetch_esa_discos():
+    if not ESA_DISCOS_TOKEN:
+        return None, None
+
     headers = {
         "Authorization": f"Bearer {ESA_DISCOS_TOKEN}",
         "DiscosWeb-Api-Version": "2",
@@ -458,7 +258,7 @@ def fetch_esa_discos():
     resp = requests.get(url, headers=headers)
 
     if resp.status_code == 401:
-        print("\n  !! ESA DISCOS: 401 Unauthorized — check ESA_DISCOS_TOKEN")
+        print("\n  !! ESA DISCOS: 401 Unauthorized — check ESA_DISCOS_TOKEN in .env")
         return None, None
     if resp.status_code != 200:
         print(f"\n  !! ESA DISCOS: request failed {resp.status_code} — {resp.text[:200]}")
@@ -618,7 +418,7 @@ def print_source_5(kp_raw, f107_raw, wind_raw):
 # SAVE EXAMPLE JSON
 # ══════════════════════════════════════════════════════════════════════
 
-def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107, wind):
+def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107, wind, kp_raw, wind_raw):
     """
     Saves one representative record from every source into example_data.json.
     This is the single file your pipeline teammate needs to understand every
@@ -640,7 +440,7 @@ def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107
             "description": (
                 "One live record from each Drift Zero data source. "
                 "Field names, types, and values are exactly what the pipeline will receive. "
-                "See test_apis.py schema tables for per-field documentation."
+                "See backend/api_test.py schema tables for per-field documentation."
             )
         },
 
@@ -680,7 +480,7 @@ def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107
                 "_doc": "Current geomagnetic activity. >5 = flag TLE conjunctions as low-confidence.",
                 "_endpoint": "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
                 "parsed": kp,
-                "raw_sample": kp_raw_global[0:3] if kp_raw_global else []
+                "raw_sample": kp_raw[0:3] if kp_raw else []
             },
 
             "f107_solar_flux": {
@@ -693,7 +493,7 @@ def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107
                 "_doc": "Real-time solar wind from DSCOVR satellite at L1. Elevated speed = Kp storm coming in 1–3 days.",
                 "_endpoint": "https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json",
                 "latest_record": wind,
-                "raw_sample": wind_raw_global[-3:] if wind_raw_global else []
+                "raw_sample": wind_raw[-3:] if wind_raw else []
             }
         }
     }
@@ -708,10 +508,6 @@ def save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107
 # ══════════════════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════════════════
-
-# Globals to pass raw NOAA data into save_example_json
-kp_raw_global   = []
-wind_raw_global = []
 
 if __name__ == "__main__":
     print("\n" + "━" * W)
@@ -746,18 +542,16 @@ if __name__ == "__main__":
 
     # ── NOAA SWPC (source 5) ────────────────────────────────────────────
     kp_raw, f107_raw, wind_raw = fetch_noaa()
-    kp_raw_global   = kp_raw
-    wind_raw_global = wind_raw
-    kp, f107, wind  = print_source_5(kp_raw, f107_raw, wind_raw)
+    kp, f107, wind = print_source_5(kp_raw, f107_raw, wind_raw)
 
     # ── Save everything ─────────────────────────────────────────────────
     print("\n" + "━" * W)
     print("  SAVING example_data.json")
     print("━" * W)
-    save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107, wind)
+    save_example_json(tle, hist_data, cdm_data, discos_obj, discos_raw, kp, f107, wind, kp_raw, wind_raw)
 
     print("\n" + "━" * W)
     print("  DONE")
     print("  → example_data.json  contains one live record from every source")
-    print("  → test_apis.py schema tables document every field in the pipeline")
+    print("  → backend/api_test.py schema tables document every field in the pipeline")
     print("━" * W + "\n")

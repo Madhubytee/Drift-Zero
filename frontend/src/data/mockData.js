@@ -148,7 +148,9 @@ export const conjunctions = [
     severity: "CRITICAL",
     doNothingConfidence: 0.04,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T22:15:00Z"
+    lastUpdated: "2026-04-11T22:15:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 47
   },
   {
     id: "CDM-2026-0411-002",
@@ -165,7 +167,9 @@ export const conjunctions = [
     severity: "CRITICAL",
     doNothingConfidence: 0.08,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T22:15:00Z"
+    lastUpdated: "2026-04-11T22:15:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 47
   },
   {
     id: "CDM-2026-0411-003",
@@ -182,7 +186,9 @@ export const conjunctions = [
     severity: "HIGH",
     doNothingConfidence: 0.21,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T21:44:00Z"
+    lastUpdated: "2026-04-11T21:44:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 76
   },
   {
     id: "CDM-2026-0411-004",
@@ -199,7 +205,9 @@ export const conjunctions = [
     severity: "HIGH",
     doNothingConfidence: 0.19,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T20:32:00Z"
+    lastUpdated: "2026-04-11T20:32:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 108
   },
   {
     id: "CDM-2026-0411-005",
@@ -216,7 +224,9 @@ export const conjunctions = [
     severity: "MEDIUM",
     doNothingConfidence: 0.44,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T19:17:00Z"
+    lastUpdated: "2026-04-11T19:17:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 163
   },
   {
     id: "CDM-2026-0411-006",
@@ -233,7 +243,9 @@ export const conjunctions = [
     severity: "LOW",
     doNothingConfidence: 0.71,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T18:55:00Z"
+    lastUpdated: "2026-04-11T18:55:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 185
   },
   {
     id: "CDM-2026-0411-007",
@@ -250,7 +262,9 @@ export const conjunctions = [
     severity: "LOW",
     doNothingConfidence: 0.89,
     operatorWillManeuver: false,
-    lastUpdated: "2026-04-11T17:23:00Z"
+    lastUpdated: "2026-04-11T17:23:00Z",
+    dataSource: "spacetrack",
+    dataAgeMinutes: 227
   }
 ]
 

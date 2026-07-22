@@ -99,10 +99,10 @@ export default function CascadeAnalysis({ conjunction, conjunctions = [], select
                   </span>
                 )}
               </div>
-              {cascadeRisks.map((cr, i) => {
+              {cascadeRisks.map((cr) => {
                 const typeColor = RISK_TYPE_COLOR[cr.risk_type] ?? '#94a3b8'
                 return (
-                  <div key={i} style={{
+                  <div key={`${cr.norad_id}-${cr.risk_type}`} style={{
                     borderRadius: 4, padding: '8px 10px', marginBottom: 5,
                     background: `${typeColor}0d`,
                     border: `1px solid ${typeColor}30`,

@@ -104,6 +104,15 @@ export default function AlertQueue({
             <div
               key={c.id}
               onClick={() => onSelect(isSelected ? null : c)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect(isSelected ? null : c)
+                }
+              }}
               style={{
                 margin: '6px 10px',
                 padding: '10px 12px',

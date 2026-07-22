@@ -37,6 +37,7 @@ export function normalizeConjunction(event) {
     severity:             riskToSeverity(riskScore),
     doNothingConfidence:  event.do_nothing_confidence ?? 0.5,
     lastUpdated:          event.timestamp_utc,
+    dataSource:              event.data_source,
     dataAgeMinutes:          event.data_age_minutes,
     summary:                 event.summary ?? '',
     primaryTleLine1:         event.primary?.tle_line1  ?? '',
@@ -66,13 +67,27 @@ export function deriveStats(conjunctions) {
 }
 
 // ── Fetch conjunctions from Shield API ────────────────────────────────────────
-export async function fetchConjunctions(noradId, { minRisk = 0, limit = 100 } = {}, signal) {
+export async function fetchConjunctions(noradId, { minRisk = 0, limit = 100, timeoutMs = 8000 } = {}, signal) {
   const url = `${BASE_URL}/api/conjunctions/${noradId}?min_risk=${minRisk}&limit=${limit}`
-  const res = await fetch(url, signal ? { signal } : undefined)
-  if (!res.ok) throw new Error(`Shield API ${res.status}: ${res.statusText}`)
-  const data = await res.json()
-  const conjunctions = (data.events ?? []).map(normalizeConjunction)
-  return { conjunctions, stats: deriveStats(conjunctions) }
+  const controller = new AbortController()
+  const onAbort = () => controller.abort()
+  signal?.addEventListener('abort', onAbort)
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) throw new Error(`Shield API ${res.status}: ${res.statusText}`)
+    const data = await res.json()
+    const conjunctions = (data.events ?? []).map(normalizeConjunction)
+    return { conjunctions, stats: deriveStats(conjunctions) }
+  } catch (err) {
+    if (err.name === 'AbortError' && !signal?.aborted) {
+      throw new Error(`Shield API request timed out after ${timeoutMs}ms`)
+    }
+    throw err
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', onAbort)
+  }
 }
 
 // ── Fetch satellite info (name, TLE, orbital params) ─────────────────────────
