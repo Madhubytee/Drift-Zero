@@ -24,5 +24,7 @@ anthropic
 # ─── Scheduling / Orchestration ────────────────────────────────────────────────
 apscheduler
 
+# ─── API / Deployment ──────────────────────────────────────────────────────────
 fastapi
 uvicorn[standard]
+slowapi

@@ -1,8 +1,12 @@
 import os
 import time
 import logging
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 import anthropic
 
 from run_rogue import run
@@ -20,7 +24,11 @@ from backend.rogue.mission_mismatch import get_all_known_satellites, get_mismatc
 
 logger = logging.getLogger("api")
 
+limiter = Limiter(key_func=get_remote_address, default_limits=["20/minute"])
+
 app = FastAPI(title="Drift Zero — Rogue API", version="0.3.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +36,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(SlowAPIMiddleware)
 
 _MODEL = "claude-haiku-4-5-20251001"
 _CACHE_TTL = 30 * 60
@@ -63,7 +72,9 @@ _DEFAULT_ROGUE_NORADS = [59773, 25544, 48274, 44713, 28190]
 _ROGUE_DAYS = 180   # must reach Feb 2026 events (~45 days back from demo date)
 
 @app.get("/api/rogue/events")
+@limiter.limit("20/minute")
 def get_events(
+    request: Request,
     norad_ids: list[int] = Query(default=None),
     days: int = Query(default=_ROGUE_DAYS, ge=7, le=180),
 ):
