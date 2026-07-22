@@ -72,7 +72,7 @@ _DEFAULT_ROGUE_NORADS = [59773, 25544, 48274, 44713, 28190]
 _ROGUE_DAYS = 180   # must reach Feb 2026 events (~45 days back from demo date)
 
 @app.get("/api/rogue/events")
-@limiter.limit("20/minute")
+@limiter.limit("3/day")
 def get_events(
     request: Request,
     norad_ids: list[int] = Query(default=None),
