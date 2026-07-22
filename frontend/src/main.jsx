@@ -253,6 +253,29 @@ function App() {
     }
   }
 
+  const handleGoHome = () => {
+    setActivated(false)
+    setLandingMounted(true)
+    setDemoMode(false)
+    setFocusedEntityId(null)
+    setShowAllSats(false)
+    setTrackedNoradId(null)
+    setActiveNoradId(25544)
+
+    const viewer = window._driftViewer
+    if (viewer && !viewer.isDestroyed()) {
+      viewer.entities.values.forEach(e => { e.show = false })
+    }
+    window._driftSpinning = true
+    const spin = () => {
+      if (window._driftSpinning && viewer && !viewer.isDestroyed()) {
+        viewer.camera.rotateRight(0.003)
+        requestAnimationFrame(spin)
+      }
+    }
+    requestAnimationFrame(spin)
+  }
+
   const handleActivate = (noradId, demo = false) => {
     setDemoMode(demo)
     const entityId = noradId ? (NORAD_TO_ENTITY_ID[Number(noradId)] ?? null) : null
@@ -345,7 +368,7 @@ function App() {
 
       {/* Dashboard — slides in after activation */}
       <StrictMode>
-        <DashboardOverlay activated={activated} noradId={activeNoradId} demo={demoMode} showAll={showAllSats} onRetarget={handleRetarget} />
+        <DashboardOverlay activated={activated} noradId={activeNoradId} demo={demoMode} showAll={showAllSats} onRetarget={handleRetarget} onGoHome={handleGoHome} />
       </StrictMode>
 
       {/* Mask GlobeView's own UI chrome during landing */}

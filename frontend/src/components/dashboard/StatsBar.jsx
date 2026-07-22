@@ -89,7 +89,7 @@ const severity = {
   normal: '#94a3b8',
 }
 
-export default function StatsBar({ stats: propStats, isLive = false, onRetarget, trackedId }) {
+export default function StatsBar({ stats: propStats, isLive = false, onRetarget, trackedId, onGoHome }) {
   const fleetStats = propStats ?? mockFleetStats
   const [searchVal, setSearchVal] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -105,7 +105,11 @@ export default function StatsBar({ stats: propStats, isLive = false, onRetarget,
   return (
     <div style={S.bar}>
       {/* Logo */}
-      <div style={S.logo}>
+      <div
+        style={{ ...S.logo, cursor: onGoHome ? 'pointer' : 'default' }}
+        onClick={onGoHome}
+        title={onGoHome ? 'Back to home' : undefined}
+      >
         <div style={S.dot} />
         <span style={S.logoText}>Drift Zero</span>
       </div>
